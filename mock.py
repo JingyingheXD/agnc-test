@@ -1,5 +1,4 @@
 import random
-import json
 from faker import Faker
 from datetime import datetime, timezone, timedelta
 
@@ -123,10 +122,3 @@ class Mock:
         }
         print(dic)
         return dic
-
-
-if __name__ == '__main__':
-    data = Mock(10)
-    data_dic = data.combine_data()
-    with open('hello.json', 'w') as outfile:
-        json_object = json.dump(data_dic, outfile)
