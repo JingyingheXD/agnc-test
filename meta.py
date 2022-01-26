@@ -8,7 +8,7 @@ class Meta:
         self.activities_count = activities_count
 
     def convert_time_format(self, dt_time):
-        str_time = datetime.strftime(dt_time, '%d-%m-%Y %H:%M:%S +%z')
+        str_time = datetime.strftime(dt_time, '%d-%m-%Y %H:%M:%S %z')
         return str_time
 
     def output_meta(self):

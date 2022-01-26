@@ -1,6 +1,6 @@
 import random
 from faker import Faker
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ticket import Ticket
 from meta import Meta
@@ -28,12 +28,6 @@ class Mock:
         self.requester = [random.randrange(
             100000, 999999, 1) for i in range(100)]
 
-#   TODO: convert time format???+0000
-    def convert_time_format(self, dt_time):
-        # TODO +0000
-        str_time = datetime.strftime(dt_time, '%d-%m-%Y %H:%M:%S +%z')
-        return str_time
-
     def gen_num(self, nums_set, max_num):
         # generate a non-duplicate random number
         while True:
@@ -57,8 +51,8 @@ class Mock:
     def mock_activity_detail(self, start_time, performer_id):
         shipping_address = random.choice(['N/A', fake.address()])
         # TODO: how to set the end_date
-        shipment_datetime = fake.date_between(
-            start_date='-1y')
+        shipment_datetime = fake.date_time_between(
+            start_date='-1y', tzinfo=timezone.utc)
         shipment_date = datetime.strftime(shipment_datetime, '%d %b %Y')
         category = random.choice(self.cate)
         contacted_customer = True
@@ -88,20 +82,17 @@ class Mock:
         return detail_dic
 
     def mock_meta(self):
-        start_at = fake.date_time_this_decade()
-        # start_at = self.convert_time_format(start_at_datetime)
+        start_at = fake.date_time_this_decade(tzinfo=timezone.utc)
         end_at = fake.date_time_between_dates(
-            datetime_start=start_at)
-        # end_at = self.convert_time_format(end_at_datetime)
+            datetime_start=start_at, tzinfo=timezone.utc)
         activities_count = self.activities_count
 
         meta = Meta(start_at, end_at, activities_count)
-        # return meta.output_meta()
         return meta
 
     def mock_ticket(self, start_time, end_time):
         performed_at = fake.date_time_between_dates(
-            datetime_start=start_time, datetime_end=end_time)
+            datetime_start=start_time, datetime_end=end_time, tzinfo=timezone.utc)
         ticket_id = self.gen_num(self.tickets_id, 99999)
         # TODO: how to random performer?
         performer = ['user', 'admin']
