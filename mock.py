@@ -11,9 +11,9 @@ fake = Faker()
 class Mock:
     def __init__(self, activities_count=5):
         self.activities_count = activities_count
-        self.tickets_id = {}
-        self.notes_id = {}
-        self.requester = {}
+        self.tickets_id = set()
+        self.notes_id = set()
+        self.requester = set()
         self.performers = {
             'admin': [random.randrange(100000, 110000, 1) for i in range(5)],
             'user': [random.randrange(110001, 999999, 1) for i in range(100)]
@@ -24,7 +24,7 @@ class Mock:
                        'Waiting for Customer', 'Waiting for Third Party', 'Pending']
         self.group = ['Normal', 'Refund']
         self.requester = [random.randrange(
-            100000, 999999, 1) for i in range()]
+            100000, 999999, 1) for i in range(100)]
 
     def gen_num(self, nums_set, max_num):
         # generate a non-duplicate random number
@@ -47,8 +47,10 @@ class Mock:
         return note_dic
 
     def mock_activity_detail(self, start_time, performer_id):
-        shipping_address = ['N/A', fake.address()]
-        shipment_date = date_between(start_date=start_time, end_date='1y')
+        shipping_address = random.choice(['N/A', fake.address()])
+        # TODO: how to set the end_date
+        shipment_date = fake.date_between(
+            start_date='-1y')
         category = random.choice(self.cate)
         contacted_customer = True
         issue_type = random.choice(self.issue_type)
@@ -82,13 +84,16 @@ class Mock:
         activities_count = self.activities_count
 
         meta = Meta(start_at, end_at, activities_count)
-        return meta.output_meta()
+        # return meta.output_meta()
+        return meta
 
     def mock_ticket(self, start_time, end_time):
         performed_at = fake.date_time_between_dates(
             datetime_start=start_time, datetime_end=end_time)
         ticket_id = self.gen_num(self.tickets_id, 99999)
-        performer_type = random.choice(self.performers.keys())
+        # TODO: how to random performer?
+        performer = ['user', 'admin']
+        performer_type = random.choice(performer)
         performer_id = random.choice(self.performers[performer_type])
 
         activity = self.mock_activity_note() if random.choice(
@@ -96,26 +101,29 @@ class Mock:
 
         ticket = Ticket(performed_at, ticket_id,
                         performer_type, performer_id, activity)
-        return ticket.output_ticket()
+        return ticket
 
     def mock_tickets(self, start_time, end_time):
         activities_data = []
         st_time = start_time
         for _ in range(self.activities_count):
-            activities_data.append(self.mock_ticket(st_time, end_time))
+            ticket = self.mock_ticket(st_time, end_time)
+            activities_data.append(ticket.output_ticket())
+            st_time = ticket.performed_at
         return activities_data
 
     def combine_data(self):
         meta = self.mock_meta()
+        meta_data = meta.output_meta()
         activities_data = self.mock_tickets(meta.start_at, meta.end_at)
         print(
             {
-                'metadata': meta,
+                'metadata': meta_data,
                 'activities_data': activities_data
             }
         )
 
 
-if __name__ == '_main_':
+if __name__ == '__main__':
     data = Mock(10)
     data.combine_data()

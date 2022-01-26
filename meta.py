@@ -1,8 +1,8 @@
 class Meta:
     def __init__(self, start_at, end_at, activities_count):
-        self.start_at = None
-        self.end_at = None
-        self.activities_count = None
+        self.start_at = start_at
+        self.end_at = end_at
+        self.activities_count = activities_count
 
     def output_meta(self):
         return(
