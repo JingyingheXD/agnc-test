@@ -1,4 +1,5 @@
 import random
+import json
 from faker import Faker
 from datetime import datetime, timezone, timedelta
 
@@ -116,14 +117,16 @@ class Mock:
         meta_data = meta.output_meta()
         activities_data = self.mock_tickets(
             meta.start_at, meta.end_at)
-        print(
-            {
-                'metadata': meta_data,
-                'activities_data': activities_data
-            }
-        )
+        dic = {
+            'metadata': meta_data,
+            'activities_data': activities_data
+        }
+        print(dic)
+        return dic
 
 
 if __name__ == '__main__':
     data = Mock(10)
-    data.combine_data()
+    data_dic = data.combine_data()
+    with open('hello.json', 'w') as outfile:
+        json_object = json.dump(data_dic, outfile)
