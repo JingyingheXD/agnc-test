@@ -12,7 +12,7 @@ fake = Faker()
 class Mock:
     def __init__(self, activities_count=5):
         self.activities_count = activities_count
-        self.tickets_id = set()
+        self.ticket_id = fake.random_int(min=101, max=999)
         self.notes_id = set()
         self.requester = set()
         self.performers = {
@@ -91,7 +91,8 @@ class Mock:
     def mock_ticket(self, start_time, end_time):
         performed_at = fake.date_time_between_dates(
             datetime_start=start_time, datetime_end=end_time, tzinfo=timezone.utc)
-        ticket_id = self.gen_num(self.tickets_id, 99999)
+        self.ticket_id += 1
+        ticket_id = self.ticket_id
         performer_type = random.choice(list(self.performers.keys()))
         performer_id = random.choice(self.performers[performer_type])
 
