@@ -1,5 +1,6 @@
 import random
 from faker import Faker
+from datetime import datetime
 
 from ticket import Ticket
 from meta import Meta
@@ -11,6 +12,7 @@ fake = Faker()
 class Mock:
     def __init__(self, activities_count=5):
         self.activities_count = activities_count
+        # TODO: tickets_id increase
         self.tickets_id = set()
         self.notes_id = set()
         self.requester = set()
@@ -25,6 +27,12 @@ class Mock:
         self.group = ['Normal', 'Refund']
         self.requester = [random.randrange(
             100000, 999999, 1) for i in range(100)]
+
+#   TODO: convert time format???+0000
+    def convert_time_format(self, dt_time):
+        # TODO +0000
+        str_time = datetime.strftime(dt_time, '%d-%m-%Y %H:%M:%S +%z')
+        return str_time
 
     def gen_num(self, nums_set, max_num):
         # generate a non-duplicate random number
@@ -49,8 +57,9 @@ class Mock:
     def mock_activity_detail(self, start_time, performer_id):
         shipping_address = random.choice(['N/A', fake.address()])
         # TODO: how to set the end_date
-        shipment_date = fake.date_between(
+        shipment_datetime = fake.date_between(
             start_date='-1y')
+        shipment_date = datetime.strftime(shipment_datetime, '%d %b %Y')
         category = random.choice(self.cate)
         contacted_customer = True
         issue_type = random.choice(self.issue_type)
@@ -80,7 +89,10 @@ class Mock:
 
     def mock_meta(self):
         start_at = fake.date_time_this_decade()
-        end_at = fake.date_time_between_dates(datetime_start=start_at)
+        # start_at = self.convert_time_format(start_at_datetime)
+        end_at = fake.date_time_between_dates(
+            datetime_start=start_at)
+        # end_at = self.convert_time_format(end_at_datetime)
         activities_count = self.activities_count
 
         meta = Meta(start_at, end_at, activities_count)
@@ -115,7 +127,8 @@ class Mock:
     def combine_data(self):
         meta = self.mock_meta()
         meta_data = meta.output_meta()
-        activities_data = self.mock_tickets(meta.start_at, meta.end_at)
+        activities_data = self.mock_tickets(
+            meta.start_at, meta.end_at)
         print(
             {
                 'metadata': meta_data,
