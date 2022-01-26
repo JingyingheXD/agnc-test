@@ -12,7 +12,6 @@ fake = Faker()
 class Mock:
     def __init__(self, activities_count=5):
         self.activities_count = activities_count
-        # TODO: tickets_id increase
         self.tickets_id = set()
         self.notes_id = set()
         self.requester = set()
