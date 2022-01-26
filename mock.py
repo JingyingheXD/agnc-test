@@ -94,9 +94,7 @@ class Mock:
         performed_at = fake.date_time_between_dates(
             datetime_start=start_time, datetime_end=end_time, tzinfo=timezone.utc)
         ticket_id = self.gen_num(self.tickets_id, 99999)
-        # TODO: how to random performer?
-        performer = ['user', 'admin']
-        performer_type = random.choice(performer)
+        performer_type = random.choice(list(self.performers.keys()))
         performer_id = random.choice(self.performers[performer_type])
 
         activity = self.mock_activity_note() if random.choice(
