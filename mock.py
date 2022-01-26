@@ -1,6 +1,6 @@
 import random
 from faker import Faker
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from ticket import Ticket
 from meta import Meta
@@ -48,11 +48,10 @@ class Mock:
         }
         return note_dic
 
-    def mock_activity_detail(self, start_time, performer_id):
+    def mock_activity_detail(self, performed_at, performer_id):
         shipping_address = random.choice(['N/A', fake.address()])
-        # TODO: how to set the end_date
         shipment_datetime = fake.date_time_between(
-            start_date='-1y', tzinfo=timezone.utc)
+            start_date=performed_at, end_date=performed_at+timedelta(days=180), tzinfo=timezone.utc)
         shipment_date = datetime.strftime(shipment_datetime, '%d %b %Y')
         category = random.choice(self.cate)
         contacted_customer = True
@@ -98,7 +97,7 @@ class Mock:
         performer_id = random.choice(self.performers[performer_type])
 
         activity = self.mock_activity_note() if random.choice(
-            ['note', 'detail']) == 'note' else self.mock_activity_detail(start_time, performer_id)
+            ['note', 'detail']) == 'note' else self.mock_activity_detail(performed_at, performer_id)
 
         ticket = Ticket(performed_at, ticket_id,
                         performer_type, performer_id, activity)
