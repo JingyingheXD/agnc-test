@@ -21,7 +21,6 @@ class Mock:
         }
         # TODO
         self.category = ['Email', 'Phone', 'Chat', 'Social']
-        self.cate = ['mobile', 'Phone', 'PC']
         self.issue_type = ['Incident', 'Question',
                            'Problem', 'Feature Request', 'Refund']
         self.status = ['Open', 'Closed', 'Resolved',
@@ -29,6 +28,7 @@ class Mock:
         self.group = ['Refund', 'Customer Support', 'Escalations']
         self.requester = [random.randrange(
             100000, 999999, 1) for i in range(100)]
+        self.product = ['mobile', 'PC']
 
     def gen_num(self, nums_set, max_num):
         # generate a non-duplicate random number
@@ -40,7 +40,7 @@ class Mock:
 
     def mock_activity_note(self):
         note_id = self.gen_num(self.notes_id, 999999)
-        note_type = fake.random_int(min=1, max=20)
+        note_type = fake.random_int(min=1, max=6)
 
         note_dic = {
             'note': {
@@ -64,7 +64,7 @@ class Mock:
         group = random.choice(self.group)
         agent_id = performer_id
         requester = random.choice(self.requester)
-        product = random.choice(self.cate)
+        product = random.choice(self.product)
 
         detail_dic = {
             'shipping_address': shipping_address,
