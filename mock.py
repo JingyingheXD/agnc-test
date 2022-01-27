@@ -81,8 +81,7 @@ class Mock:
 
     def mock_meta(self):
         start_at = fake.date_time_this_decade(tzinfo=timezone.utc)
-        end_at = fake.date_time_between_dates(
-            datetime_start=start_at, tzinfo=timezone.utc)
+        end_at = start_at + timedelta(days=180) + timedelta(seconds=-1)
         activities_count = self.activities_count
 
         meta = Meta(start_at, end_at, activities_count)
