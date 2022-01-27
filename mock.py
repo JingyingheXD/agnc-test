@@ -16,14 +16,17 @@ class Mock:
         self.notes_id = set()
         self.requester = set()
         self.performers = {
-            'admin': [random.randrange(100000, 110000, 1) for i in range(5)],
-            'user': [random.randrange(110001, 999999, 1) for i in range(100)]
+            'admin': random.sample(range(100000, 110000), 5),
+            'user': random.sample(range(110001, 999999), 100)
         }
+        # TODO
+        self.category = ['Email', 'Phone', 'Chat', 'Social']
         self.cate = ['mobile', 'Phone', 'PC']
-        self.issue_type = ['Incident', 'Change', 'Problem']
+        self.issue_type = ['Incident', 'Question',
+                           'Problem', 'Feature Request', 'Refund']
         self.status = ['Open', 'Closed', 'Resolved',
                        'Waiting for Customer', 'Waiting for Third Party', 'Pending']
-        self.group = ['Normal', 'Refund']
+        self.group = ['Refund', 'Customer Support', 'Escalations']
         self.requester = [random.randrange(
             100000, 999999, 1) for i in range(100)]
 
@@ -52,12 +55,12 @@ class Mock:
         shipment_datetime = fake.date_time_between(
             start_date=performed_at, end_date=performed_at+timedelta(days=180), tzinfo=timezone.utc)
         shipment_date = datetime.strftime(shipment_datetime, '%d %b %Y')
-        category = random.choice(self.cate)
+        category = random.choice(self.category)
         contacted_customer = True
         issue_type = random.choice(self.issue_type)
         source = fake.random_int(min=1, max=10)
         status = random.choice(self.status)
-        priority = fake.random_int(min=1, max=5)
+        priority = fake.random_int(min=1, max=4)
         group = random.choice(self.group)
         agent_id = performer_id
         requester = random.choice(self.requester)
