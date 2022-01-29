@@ -7,6 +7,8 @@ from meta import Meta
 from note import Note
 from order import Order
 from activity import Activity
+from ticket import Ticket
+from agent import Agent
 
 
 fake = Faker()
@@ -48,12 +50,6 @@ class Mock:
         self.order_id = fake.random_int(min=100001, max=999999)
         self.tickets_first_performed_time = {}
 
-    def gen_activities_num(self):
-        # generate a dictionary ticket_activities_num{ticket_id: activities_num}
-        for ticket_id in self.tickets_id:
-            self.ticket_activities_num[ticket_id] = fake.random_int(
-                min=1, max=3)
-
     def gen_num(self, nums_set, max_num):
         # generate a non-duplicate random number (range: 1 - max_num) and store in nums_set
         while True:
@@ -68,11 +64,8 @@ class Mock:
             agent_id = random.choice(self.agents['user'])
         else:
             agent_id = self.agents[agent_type]
+        agent = Agent(agent_id, agent_type)
         return agent_id, agent_type
-
-    def mock_ticket(self):
-        ticket_id = random.choice(self.tickets_id)
-        return ticket_id
 
     def mock_activity_note(self):
         self.note_id += 1
@@ -105,6 +98,7 @@ class Mock:
     def mock_activity(self, performed_at, ticket_id):
         self.activity_id += 1
         activity_id = self.activity_id
+        activity = Activity(activity_id, performed_at)
         new_performed_at = datetime.strftime(
             performed_at, '%d-%m-%Y %H:%M:%S %z')
         performer_id, performer_type = self.mock_agent()
@@ -133,6 +127,7 @@ class Mock:
         activities_data = []
         st_time = start_time
         for ticket_id in self.tickets_id:
+            ticket = Ticket(ticket_id)
             performed_at = fake.date_time_between_dates(
                 datetime_start=st_time, datetime_end=end_time, tzinfo=timezone.utc)
             st_time = performed_at
@@ -140,6 +135,7 @@ class Mock:
             activity = self.mock_activity(performed_at, ticket_id)
             activities_data.append(activity)
         for ticket_id in twice_tickets_id:
+            ticket = Ticket(ticket_id)
             performed_at = fake.date_time_between_dates(
                 datetime_start=self.tickets_first_performed_time[ticket_id], datetime_end=end_time, tzinfo=timezone.utc)
             activity = self.mock_activity(performed_at, ticket_id)
