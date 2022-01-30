@@ -26,10 +26,10 @@ cur.execute('''
 cur.execute('''
     CREATE TABLE IF NOT EXISTS Activity(
         activity_id INTEGER,
-        agent_id INTEGER,
+        ticket_id INTEGER,
         performed_at DATETIME,
         PRIMARY KEY (activity_id),
-        FOREIGN KEY (agent_id) REFERENCES Agents (agent_id) ON DELETE CASCADE
+        FOREIGN KEY (ticket_id) REFERENCES Tickets (ticket_id) ON DELETE CASCADE
     )
 ''')
 
@@ -90,7 +90,6 @@ try:
                         activity_id, activity['activity']['note']['type']))
 except sqlite3.IntegrityError as e:
     print('Error occurred: ', e)
-
 
 
 cur.close()
