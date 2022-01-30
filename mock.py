@@ -33,9 +33,12 @@ class Mock:
         }
         self.issue_types = ['Incident', 'Question',
                             'Problem', 'Feature Request', 'Refund']
-        self.statuses = ['Open', 'Closed', 'Resolved',
-                         'Waiting for Customer', 'Waiting for Third Party', 'Pending']
-        self.statuses = ['Open', 'Waiting for Customer', 'Pending', ]
+        # self.statuses = ['Open', 'Pending', 'Resolved', 'Closed',
+        #                  'Waiting for Customer', 'Waiting for Third Party']
+
+        self.statuses = ['Open', 'Waiting for Customer', 'Pending',
+                         'Waiting for Third Party', 'Resolved',  'Closed']
+
         self.groups = ['Refund', 'Customer Support', 'Escalations']
         self.contacted_customers = [True, False]
         self.requesters = random.sample(range(100000, 999999), 100)
@@ -50,6 +53,7 @@ class Mock:
         self.note_id = fake.random_int(min=1000001, max=9999999)
         self.order_id = fake.random_int(min=100001, max=999999)
         self.tickets_first_performed_time = {}
+        self.order_tickets_id = {}
 
     def gen_num(self, nums_set, max_num):
         # generate a non-duplicate random number (range: 1 - max_num) and store in nums_set
@@ -75,7 +79,7 @@ class Mock:
         note = Note(note_id, note_type)
         return note
 
-    def mock_activity_order(self, performed_at, performer_id):
+    def mock_activity_order(self, performed_at, performer_id, status_id):
         self.order_id += 1
         order_id = self.order_id
         shipping_address = random.choice(['N/A', fake.address()])
@@ -85,7 +89,6 @@ class Mock:
         category = self.source_categories[source]
         priority = fake.random_int(min=1, max=4)
         issue_type = random.choice(self.issue_types)
-        status = random.choice(self.statuses)
         group = random.choice(self.groups)
         contacted_customer = random.choice(self.contacted_customers)
         requester = random.choice(self.requesters)
@@ -93,10 +96,11 @@ class Mock:
         agent_id = performer_id
 
         order = Order(order_id, shipping_address, shipment_datetime, priority, issue_type,
-                      status, group, category, source, requester, product, contacted_customer, agent_id)
+                      status_id, group, category, source, requester, product, contacted_customer, agent_id)
         return order
 
-    def mock_activity(self, performed_at, ticket_id):
+    def mock_activity(self, performed_at, ticket_id, flag=0):
+        # when flag is 0, random choose note or order; when flag is 1, choose order
         self.activity_id += 1
         activity_id = self.activity_id
         activity = Activity(activity_id, performed_at)
@@ -104,13 +108,20 @@ class Mock:
             performed_at, '%d-%m-%Y %H:%M:%S %z')
         performer_id, performer_type = self.mock_agent()
 
-        activity_type = random.choice([0, 1])
         activity_data = None
-        if activity_type == 0:
-            activity_data = self.mock_activity_note().output_note()
+        if flag == 0:
+            activity_type = random.choice([0, 1])
+            if activity_type == 0:
+                activity_data = self.mock_activity_note().output_note()
+            else:
+                activity_data = self.mock_activity_order(
+                    performed_at, performer_id, 0).output_order()
+                self.order_tickets_id[ticket_id] = 0
         else:
+            self.order_tickets_id[ticket_id] += 1
+            status_id = self.order_tickets_id[ticket_id]
             activity_data = self.mock_activity_order(
-                performed_at, performer_id).output_order()
+                performed_at, performer_id, status_id).output_order()
 
         return(
             {
@@ -123,8 +134,7 @@ class Mock:
         )
 
     def mock_activities(self, start_time, end_time):
-        twice_tickets_id = random.sample(
-            list(self.tickets_id), self.tickets_num//2)
+        order_tickets_id = []
         activities_data = []
         st_time = start_time
         for ticket_id in self.tickets_id:
@@ -135,12 +145,13 @@ class Mock:
             self.tickets_first_performed_time[ticket_id] = performed_at
             activity = self.mock_activity(performed_at, ticket_id)
             activities_data.append(activity)
-        for ticket_id in twice_tickets_id:
-            ticket = Ticket(ticket_id)
-            performed_at = fake.date_time_between_dates(
-                datetime_start=self.tickets_first_performed_time[ticket_id], datetime_end=end_time, tzinfo=timezone.utc)
-            activity = self.mock_activity(performed_at, ticket_id)
-            activities_data.append(activity)
+        for _ in range(5):
+            for ticket_id in self.order_tickets_id:
+                performed_at = fake.date_time_between_dates(
+                    datetime_start=self.tickets_first_performed_time[ticket_id], datetime_end=end_time, tzinfo=timezone.utc)
+                self.tickets_first_performed_time[ticket_id] = performed_at
+                activity = self.mock_activity(performed_at, ticket_id, 1)
+                activities_data.append(activity)
         return activities_data
 
     def mock_meta(self):
