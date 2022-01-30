@@ -5,6 +5,7 @@ import sqlite3
 conn = sqlite3.connect('freshdesk_db.sqlite')
 cur = conn.cursor()
 
+# Create table Agents, Tickets, Activity, Act_Order, Act_Note
 cur.execute('''
     CREATE TABLE IF NOT EXISTS Agents(
         agent_id INTEGER,
@@ -62,6 +63,8 @@ cur.execute('''
     )
 ''')
 
+
+# Insert JSON data into databse
 all_data = json.load(open('activities.json'))
 activities = all_data['activities_data']
 
@@ -87,6 +90,8 @@ try:
                         activity_id, activity['activity']['note']['type']))
 except sqlite3.IntegrityError as e:
     print('Error occurred: ', e)
+
+
 
 cur.close()
 conn.commit()
