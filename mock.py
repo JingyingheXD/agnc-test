@@ -33,12 +33,8 @@ class Mock:
         }
         self.issue_types = ['Incident', 'Question',
                             'Problem', 'Feature Request', 'Refund']
-        # self.statuses = ['Open', 'Pending', 'Resolved', 'Closed',
-        #                  'Waiting for Customer', 'Waiting for Third Party']
-
         self.statuses = ['Open', 'Waiting for Customer', 'Pending',
                          'Waiting for Third Party', 'Resolved',  'Closed']
-
         self.groups = ['Refund', 'Customer Support', 'Escalations']
         self.contacted_customers = [True, False]
         self.requesters = random.sample(range(100000, 999999), 100)
@@ -94,9 +90,10 @@ class Mock:
         requester = random.choice(self.requesters)
         product = random.choice(self.products)
         agent_id = performer_id
+        status = self.statuses[status_id]
 
         order = Order(order_id, shipping_address, shipment_datetime, priority, issue_type,
-                      status_id, group, category, source, requester, product, contacted_customer, agent_id)
+                      status, group, category, source, requester, product, contacted_customer, agent_id)
         return order
 
     def mock_activity(self, performed_at, ticket_id, flag=0):
