@@ -35,6 +35,7 @@ class Mock:
                             'Problem', 'Feature Request', 'Refund']
         self.statuses = ['Open', 'Closed', 'Resolved',
                          'Waiting for Customer', 'Waiting for Third Party', 'Pending']
+        self.statuses = ['Open', 'Waiting for Customer', 'Pending', ]
         self.groups = ['Refund', 'Customer Support', 'Escalations']
         self.contacted_customers = [True, False]
         self.requesters = random.sample(range(100000, 999999), 100)
