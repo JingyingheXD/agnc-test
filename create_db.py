@@ -70,7 +70,7 @@ activities = all_data['activities_data']
 
 query1 = 'INSERT OR REPLACE INTO Agents VALUES (?,?)'
 query2 = 'INSERT OR REPLACE INTO Tickets VALUES (?,?)'
-query3 = 'INSERT INTO Activity (agent_id, performed_at) VALUES (?,?)'
+query3 = 'INSERT INTO Activity (ticket_id, performed_at) VALUES (?,?)'
 query4 = 'INSERT INTO Act_Order (activity_id,shipping_address, shipment_date,priority,issue_type,order_status,order_group,category,order_source,requester,product,contacted_customer) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'
 query5 = 'INSERT INTO Act_Note VALUES (?,?,?)'
 
@@ -80,7 +80,7 @@ try:
             query1, (activity['performer_id'], activity['performer_type']))
         cur.execute(query2, (activity['ticket_id'], activity['performer_id']))
         cur.execute(
-            query3, (activity['performer_id'], activity['performed_at']))
+            query3, (activity['ticket_id'], activity['performed_at']))
         activity_id = cur.lastrowid
         if 'note' not in activity['activity'].keys():
             cur.execute(query4, (activity_id, activity['activity']['shipping_address'], activity['activity']['shipment_date'], activity['activity']['priority'], activity['activity']['issue_type'], activity['activity']['status'],
