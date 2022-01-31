@@ -137,7 +137,7 @@ class Mock:
         for ticket_id in self.tickets_id:
             ticket = Ticket(ticket_id)
             performed_at = fake.date_time_between_dates(
-                datetime_start=st_time, datetime_end=end_time, tzinfo=timezone.utc)
+                datetime_start=st_time, datetime_end=st_time+timedelta(days=2), tzinfo=timezone.utc)
             st_time = performed_at
             self.tickets_first_performed_time[ticket_id] = performed_at
             activity = self.mock_activity(performed_at, ticket_id)
@@ -145,7 +145,7 @@ class Mock:
         for _ in range(5):
             for ticket_id in self.order_tickets_id:
                 performed_at = fake.date_time_between_dates(
-                    datetime_start=self.tickets_first_performed_time[ticket_id], datetime_end=end_time, tzinfo=timezone.utc)
+                    datetime_start=self.tickets_first_performed_time[ticket_id], datetime_end=st_time+timedelta(days=2), tzinfo=timezone.utc)
                 self.tickets_first_performed_time[ticket_id] = performed_at
                 activity = self.mock_activity(performed_at, ticket_id, 1)
                 activities_data.append(activity)

@@ -1,5 +1,6 @@
 import json
 import sqlite3
+import datetime
 
 
 conn = sqlite3.connect('freshdesk_db.sqlite')
@@ -80,7 +81,7 @@ try:
             query1, (activity['performer_id'], activity['performer_type']))
         cur.execute(query2, (activity['ticket_id'], activity['performer_id']))
         cur.execute(
-            query3, (activity['ticket_id'], activity['performed_at']))
+            query3, (activity['ticket_id'], datetime.datetime.strptime(activity['performed_at'], '%d-%m-%Y %H:%M:%S %z')))
         activity_id = cur.lastrowid
         if 'note' not in activity['activity'].keys():
             cur.execute(query4, (activity_id, activity['activity']['shipping_address'], activity['activity']['shipment_date'], activity['activity']['priority'], activity['activity']['issue_type'], activity['activity']['status'],
