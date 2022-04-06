@@ -1,5 +1,5 @@
 # Description
-Using a bash script to run a Python programing, which randomly generates realistic data based on the specified JSON format data, creates database and imports JSON file, implements a complex query.
+A data project (using Python) to use a bash script to run a program, which randomly generates realistic data based on the specified JSON format data, creates a SQLite database and imports JSON file, implements a complex query.
 
 # Steps to start the programming
 ### 1. Set up virtual environment
